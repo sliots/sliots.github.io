@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"sliots.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="网络上有关于 Tailscale DERP 的部署教程已经很多了，但鲜有将客户端及 DERP 同时通过容器进行部署的例子。~~这对于 all in docker 党非常不友好~~，因此这里简单分享一下个人的部署案例。    环境 Debian 12.x Docker 27.x  部署 首先需要前往 Keys - Tailscale 创建一个授权密钥 新建一个 docker-compose.yml">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tailscale DERP 及客户端 Docker 部署">
+<meta property="og:url" content="https://sliots.github.io/2024/11/27/tailscale-derp-docker/index.html">
+<meta property="og:site_name" content="Sliots">
+<meta property="og:description" content="网络上有关于 Tailscale DERP 的部署教程已经很多了，但鲜有将客户端及 DERP 同时通过容器进行部署的例子。~~这对于 all in docker 党非常不友好~~，因此这里简单分享一下个人的部署案例。    环境 Debian 12.x Docker 27.x  部署 首先需要前往 Keys - Tailscale 创建一个授权密钥 新建一个 docker-compose.yml">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-11-27T09:19:21.000Z">
+<meta property="article:modified_time" content="2024-11-27T09:47:01.152Z">
+<meta property="article:author" content="Sliots">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://sliots.github.io/2024/11/27/tailscale-derp-docker/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://sliots.github.io/2024/11/27/tailscale-derp-docker/","path":"2024/11/27/tailscale-derp-docker/","title":"Tailscale DERP 及客户端 Docker 部署"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Tailscale DERP 及客户端 Docker 部署 | Sliots</title>
+  
+
+
+
+
+
+
+
+<link rel="dns-prefetch" href="https://waline.sliots.com">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Sliots</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83"><span class="nav-number">1.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2"><span class="nav-number">2.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ACL%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">ACL配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E6%B3%A8"><span class="nav-number">4.</span> <span class="nav-text">附注</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">5.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sliots</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://sliots.github.io/2024/11/27/tailscale-derp-docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sliots">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sliots">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Tailscale DERP 及客户端 Docker 部署 | Sliots">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Tailscale DERP 及客户端 Docker 部署
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-11-27 17:19:21 / Modified: 17:47:01" itemprop="dateCreated datePublished" datetime="2024-11-27T17:19:21+08:00">2024-11-27</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="far fa-comment"></i>
+    </span>
+    <span class="post-meta-item-text">Waline: </span>
+  
+    <a title="waline" href="/2024/11/27/tailscale-derp-docker/#waline" itemprop="discussionUrl">
+      <span class="post-comments-count waline-comment-count" data-path="/2024/11/27/tailscale-derp-docker/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><aside>
+网络上有关于 Tailscale DERP 的部署教程已经很多了，但鲜有将客户端及 DERP 同时通过容器进行部署的例子。~~这对于 all in docker 党非常不友好~~，因此这里简单分享一下个人的部署案例。
+
+</aside>
+
+<h1 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h1><ul>
+<li>Debian 12.x</li>
+<li>Docker 27.x</li>
+</ul>
+<h1 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h1><ul>
+<li>首先需要前往 <a target="_blank" rel="noopener" href="https://login.tailscale.com/admin/settings/keys">Keys - Tailscale</a> 创建一个授权密钥</li>
+<li>新建一个 docker-compose.yml 文件</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">tailscale:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">tailscale/tailscale:latest</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">tailscale</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">host</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/dev/net/tun:/dev/net/tun</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">tailscale-sock:/var/run/tailscale</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">tailscale-state:/var/lib/tailscale</span></span><br><span class="line">    <span class="attr">cap_add:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">net_admin</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">sys_module</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TS_AUTHKEY=$&#123;TS_AUTHKEY&#125;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TS_HOSTNAME=$&#123;TS_HOSTNAME&#125;</span> </span><br><span class="line">      <span class="bullet">-</span> <span class="string">TS_NO_LOGS_NO_SUPPORT=true</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TS_STATE_DIR=/var/lib/tailscale</span> <span class="comment"># 存储 tailscaled 状态</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TS_SOCKET=/var/run/tailscale/tailscaled.sock</span> <span class="comment"># Unix socket</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">derper:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">fredliang/derper</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">derper</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">$&#123;DERP_PORT&#125;:443</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">$&#123;STUN_PORT&#125;:3478/udp</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">DERP_DOMAIN=$&#123;DERP_DOMAIN&#125;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">DERP_CERT_MODE=manual</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">DERP_CERT_DIR=/app/certs</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">DERP_VERIFY_CLIENTS=true</span> <span class="comment"># 验证客户端，防止其他人使用</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">DERP_HTTP_PORT=-1</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">tailscale-sock:/var/run/tailscale</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">$&#123;CRT_DIR&#125;:/app/certs/$&#123;DERP_DOMAIN&#125;.crt</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">$&#123;KEY_DIR&#125;:/app/certs/$&#123;DERP_DOMAIN&#125;.key</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">tailscale-sock:</span></span><br><span class="line">  <span class="attr">tailscale-state:</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">TS_AUTHKEY=</span> <span class="comment"># 填你在上面步骤获得的 KEY</span></span><br><span class="line"><span class="string">TS_HOSTNAME=</span> <span class="comment"># 填名字，方便辨认</span></span><br><span class="line"><span class="string">DERP_PORT=</span> <span class="comment"># DERP的端口</span></span><br><span class="line"><span class="string">STUN_PORT=</span> <span class="comment"># STUN的端口</span></span><br><span class="line"><span class="string">DERP_DOMAIN=</span> <span class="comment"># 注意如果你是国内的服务器，使用的域名需要在**所在服务商**备案</span></span><br><span class="line"><span class="string">CRT_DIR=</span> <span class="comment"># 证书crt路径</span></span><br><span class="line"><span class="string">KEY_DIR=</span> <span class="comment"># 证书key路径</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>最后 docker compose up -d 即可启动~</li>
+</ul>
+<h1 id="ACL配置"><a href="#ACL配置" class="headerlink" title="ACL配置"></a>ACL配置</h1><p>都是大同小异，建议参考其他人的</p>
+<h1 id="附注"><a href="#附注" class="headerlink" title="附注"></a>附注</h1><ul>
+<li>state 和 sock 没有映射到主机中（因为觉得没必要），而是直接用了 docker volume，并且没有直接映射 .sock。这是因为同时启动时会被默认创建为目录，因此映射了上一级的目录。</li>
+<li>这个部署案例默认是采用了手动维护证书的更新，个人感觉现在的证书自动化工具已经非常好用了，这里推荐一个目前在用的 <a target="_blank" rel="noopener" href="https://github.com/usual2970/certimate">https://github.com/usual2970/certimate</a></li>
+</ul>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p>如果你想通过IP部署，可以参考这篇</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://linux.do/t/topic/177517">https://linux.do/t/topic/177517</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/11/27/hello-world/" rel="prev" title="Hello World">
+                  <i class="fa fa-angle-left"></i> Hello World
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="waline"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Sliots</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-CN","enable":true,"serverURL":"https://waline.sliots.com","cssUrl":"https://unpkg.com/@waline/client@v3/dist/waline.css","commentCount":true,"pageview":false,"requiredMeta":["nick","mail"],"login":"enable","pageSize":10,"el":"#waline","comment":true,"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","path":"/2024/11/27/tailscale-derp-docker/"}</script>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css">
+<script>
+document.addEventListener('page:loaded', () => {
+  NexT.utils.loadComments(CONFIG.waline.el).then(() =>
+    NexT.utils.getScript(CONFIG.waline.libUrl, { condition: window.Waline })
+  ).then(() => 
+    Waline.init(Object.assign({}, CONFIG.waline,{ el: document.querySelector(CONFIG.waline.el) }))
+  );
+});
+</script>
+
+</body>
+</html>
