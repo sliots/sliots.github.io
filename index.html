@@ -111,7 +111,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">1</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -166,9 +166,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2024-11-27 17:19:21 / Modified: 17:47:01" itemprop="dateCreated datePublished" datetime="2024-11-27T17:19:21+08:00">2024-11-27</time>
+      <time title="Created: 2024-11-27 17:19:21" itemprop="dateCreated datePublished" datetime="2024-11-27T17:19:21+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-11-29 11:02:08" itemprop="dateModified" datetime="2024-11-29T11:02:08+08:00">2024-11-29</time>
     </span>
 
   
@@ -215,110 +221,15 @@
 <ul>
 <li>最后 docker compose up -d 即可启动~</li>
 </ul>
-<h1 id="ACL配置"><a href="#ACL配置" class="headerlink" title="ACL配置"></a>ACL配置</h1><p>都是大同小异，建议参考其他人的</p>
+<p>如果你想通过IP部署，可以参考这篇 <a target="_blank" rel="noopener" href="https://linux.do/t/topic/177517">Tailscale DERP Docker版教程（国内 无需域名 IP+Port） - 开发调优 - LINUX DO</a></p>
+<h1 id="ACL配置"><a href="#ACL配置" class="headerlink" title="ACL配置"></a>ACL配置</h1><p>暂时懒得写，参考其他人的吧 <a target="_blank" rel="noopener" href="https://blog.hz2016.com/2024/09/tailscale%E8%87%AA%E5%BB%BAderp%E6%8F%90%E9%AB%98%E6%89%93%E6%B4%9E%E6%95%88%E7%8E%87%E4%B8%8E%E4%B8%AD%E7%BB%A7%E7%A8%B3%E5%AE%9A%E6%80%A7/">tailscale自建derp提高打洞效率与中继稳定性 - 正汰的学习笔记</a></p>
 <h1 id="附注"><a href="#附注" class="headerlink" title="附注"></a>附注</h1><ul>
 <li>state 和 sock 没有映射到主机中（因为觉得没必要），而是直接用了 docker volume，并且没有直接映射 .sock。这是因为同时启动时会被默认创建为目录，因此映射了上一级的目录。</li>
 <li>这个部署案例默认是采用了手动维护证书的更新，个人感觉现在的证书自动化工具已经非常好用了，这里推荐一个目前在用的 <a target="_blank" rel="noopener" href="https://github.com/usual2970/certimate">https://github.com/usual2970/certimate</a></li>
 </ul>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p>如果你想通过IP部署，可以参考这篇</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://linux.do/t/topic/177517">https://linux.do/t/topic/177517</a></li>
+<h1 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://kiprey.github.io/2023/11/tailscale-derp/">浅探 Tailscale DERP 中转服务 | Kiprey’s Blog</a></li>
 </ul>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://sliots.github.io/2024/11/27/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Sliots">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sliots">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Sliots">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/11/27/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2024-11-27 16:46:38" itemprop="dateCreated datePublished" datetime="2024-11-27T16:46:38+08:00">2024-11-27</time>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-    <span class="post-meta-item-icon">
-      <i class="far fa-comment"></i>
-    </span>
-    <span class="post-meta-item-text">Waline: </span>
-  
-    <a title="waline" href="/2024/11/27/hello-world/#waline" itemprop="discussionUrl">
-      <span class="post-comments-count waline-comment-count" data-path="/2024/11/27/hello-world/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 
       
     </div>
